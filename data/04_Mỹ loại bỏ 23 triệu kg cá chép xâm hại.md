@@ -1,0 +1,13 @@
+Theo *Popular Science*, trong 15 năm qua, cơ quan động vật hoang dã loại bỏ gần 23 triệu kg cá chép xâm hại trên sông Illinois, tương đương cân nặng của khoảng 5.000 con voi.
+
+Các biện pháp loại bỏ cá chép xâm hại bao gồm bắt số lượng lớn cá ở từng khúc sông, dựng hàng rào ngăn chúng di chuyển và giám sát liên tục. Việc loại bỏ cá chép xâm hại trên sông Illinois nằm trong chương trình tập trung vào phần phía bắc của dòng sông, cách hồ Michigan khoảng 80 km. Dự án được thiết kế chủ yếu để hạn chế quần thể cá chép trưởng thành sống trong khu vực bằng cách giảm khả năng sinh sản và ngăn chúng di cư lên thượng nguồn.
+
+Theo MSN, công cụ được cho là sáng tạo nhất trong cuộc chiến chống cá chép xâm hại là hệ thống hàng rào điện (EDBS), cách hồ Michigan khoảng 60 km. Hàng rào này sử dụng xung điện để ngăn cá chép bơi qua khu vực Chicago và tiến vào vùng Hồ Lớn qua sông Illinois. Kết hợp với những biện pháp khác, EDBS giúp bảo vệ hệ sinh thái khỏi sụp đổ nếu cá chép xâm chiếm vùng Hồ Lớn.
+
+Hiện có 4 loài xâm hại thuộc họ Cá chép đang tàn phá vùng Hồ Lớn và nhiều nơi khác gồm cá mè hoa (*Hypophthalmichthys nobilis*), cá mè trắng (*Hypophthalmichthys molitrix*), cá trắm đen (*Mylopharyngodon piceus*) và cá trắm cỏ (*Ctenopharyngodon idella*). Theo Ủy ban Ngư nghiệp Hồ Lớn, cả 4 loài này được nhập khẩu vào Bắc Mỹ để giúp kiểm soát sâu bệnh tại các cơ sở nuôi trồng thủy sản vào thập niên 1970. Chúng thoát khỏi nơi nuôi giữ chỉ trong 10 năm, lan rộng đến lưu vực sông Mississippi và một số sông lớn khác, bao gồm sông Missouri và Illinois.
+
+Mỗi loài cá chép xâm hại có thể nặng hơn 45 kg và dài 1,2 mét tính từ đầu đến đuôi. Cá mè hoa và cá mè trắng thường ăn sinh vật phù du nhỏ trong nước, cá trắm cỏ ăn thực vật có rễ ở nơi nước nông còn cá trắm đen chủ yếu ăn động vật thân mềm và ốc sên. Theo Peter Alsip, một nhà sinh thái học tại Phòng thí nghiệm Nghiên cứu Môi trường Hồ Lớn của Cục quản lý Đại dương và Khí quyển Quốc gia Mỹ (NOAA), chúng tiêu thụ rất nhiều thức ăn và có thể tồn tại với số lượng lớn đến mức có thể làm giảm tài nguyên dành cho cá bản xứ. Chúng có thể tác động gián tiếp đến toàn bộ hệ sinh thái vì cá mè trắng ăn thực vật và động vật phù du vốn là nền tảng của mạng lưới thức ăn.
+
+Sau khi tiến vào lưu vực sông hồ, cá chép xâm hại có thể sinh sản nhanh chóng và cạnh tranh với cá bản địa. Theo Cơ quan Cá và Động vật Hoang dã Mỹ (USFWS), ở khu vực có số lượng cá chép xâm hại dồi dào, chúng có thể ảnh hưởng tới hoạt động đánh bắt cá thương mại và câu cá giải trí. Chúng cũng có thể gây nguy hiểm cho con người. Theo *MSN*, cá mè trắng nổi tiếng hay nhảy khỏi mặt nước do sợ động cơ thuyền, khiến nhiều người bị ngất xỉu, gãy xương hoặc bầm tím nặng do va chạm với những con cá to.
+
+**An Khang**
