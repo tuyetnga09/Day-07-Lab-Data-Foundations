@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 7 — Embedding &amp; Vector Store · Nhóm C2-C401</title>
+<style>
+  :root{
+    --teal:#0d9488; --teal2:#14b8a6; --teal3:#2dd4bf; --tealsoft:#ccfbf1; --tealtint:#f0fdfa;
+    --good:#059669; --warn:#d97706; --bad:#e11d48;
+    --ink:#0f172a; --body:#334155; --muted:#64748b; --line:#e2e8f0; --white:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+    background:#f8fafc;color:var(--body);overflow:hidden;
+  }
+  .deck{height:100vh;width:100vw;position:relative;background:var(--white)}
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 7vw 8vh;animation:fade .4s ease;background:var(--white);
+  }
+  .slide::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;
+    background:linear-gradient(90deg,var(--teal),var(--teal3))}
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  h1{font-size:3rem;line-height:1.14;color:var(--ink);margin-bottom:1rem;font-weight:800}
+  h1 .accent{color:var(--teal)}
+  h2{font-size:2rem;margin-bottom:1.3rem;color:var(--ink);display:flex;align-items:center;gap:.65rem;
+     padding-bottom:.7rem;border-bottom:3px solid var(--tealsoft);font-weight:800}
+  h2 .ico{font-size:1.7rem}
+  .tag{font-size:.78rem;color:var(--teal);letter-spacing:.18em;font-weight:800;text-transform:uppercase;display:block;margin-bottom:.25rem}
+  .htxt{display:flex;flex-direction:column}
+  h3{font-size:1.15rem;color:var(--teal);margin:.1rem 0 .5rem;display:flex;align-items:center;gap:.4rem;font-weight:700}
+  p,li{font-size:1.2rem;line-height:1.55;color:var(--body)}
+  b{color:var(--ink)}
+  ul{margin-left:.1rem;list-style:none;display:flex;flex-direction:column;gap:.5rem}
+  ul li{padding-left:1.9rem;position:relative}
+  ul li .li-ico{position:absolute;left:0;top:.05rem}
+  .sub{color:var(--muted);font-size:1.25rem;margin-top:.6rem}
+  .grid{display:grid;gap:1rem;margin-top:1rem}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;
+        box-shadow:0 1px 3px rgba(15,23,42,.06);
+        transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+  .card:hover{transform:translateY(-6px);border-color:var(--teal3);
+        box-shadow:0 18px 38px -14px rgba(13,148,136,.45)}
+  .card h3{margin-top:0}
+  .chip{display:inline-block;padding:.2rem .75rem;border-radius:999px;font-size:.88rem;
+        background:var(--tealtint);color:var(--teal);border:1px solid var(--tealsoft);font-weight:700;transition:all .2s}
+  .chip:hover{background:var(--teal);color:#fff;transform:translateY(-2px)}
+  table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:1.02rem;
+        border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{padding:.65rem .9rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--tealtint);color:var(--teal);font-size:.9rem;text-transform:uppercase;letter-spacing:.04em;font-weight:800}
+  tr{transition:background .18s ease}
+  tbody tr:nth-child(even) td,table tr:nth-child(even) td{background:#fafcfc}
+  tr:hover td{background:var(--tealsoft)}
+  .score{font-weight:800;font-size:1.1rem}
+  .s-good{color:var(--good)} .s-mid{color:var(--warn)} .s-bad{color:var(--bad)}
+  .me td{background:var(--tealtint);font-weight:600}
+  .me:hover td{background:var(--tealsoft)}
+  code{background:#f1f5f9;padding:.12rem .42rem;border-radius:6px;font-size:.92em;color:#be123c;font-family:'SF Mono',Consolas,monospace}
+  pre{background:#042f2e;border-radius:12px;padding:1.05rem 1.25rem;overflow:auto;
+      font-size:1.02rem;line-height:1.5;color:#ccfbf1;margin-top:1rem;font-family:'SF Mono',Consolas,monospace}
+  pre .k{color:#f9a8d4}pre .s{color:#86efac}pre .c{color:#5eaa9a}
+  .big{font-size:3.4rem;font-weight:800;color:var(--teal)}
+  .kpi{display:flex;gap:1.2rem;margin-top:1.3rem;flex-wrap:wrap}
+  .kpi .card{flex:1;min-width:160px;text-align:center;background:var(--tealtint)}
+  .members{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem;justify-content:center}
+  .members span{background:var(--tealtint);border:1px solid var(--tealsoft);padding:.5rem 1rem;border-radius:999px;
+        font-size:1rem;color:var(--ink);transition:all .22s ease;cursor:default}
+  .members span:hover{background:var(--teal);color:#fff;transform:translateY(-4px) scale(1.05)}
+  .flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1rem;font-size:1.1rem}
+  .flow .step{background:var(--tealtint);border:1px solid var(--tealsoft);padding:.6rem 1rem;border-radius:10px;color:var(--ink);transition:all .22s}
+  .flow .step:hover{transform:translateY(-4px);background:var(--teal);color:#fff;border-color:var(--teal)}
+  .flow .step:hover code{background:rgba(255,255,255,.25);color:#fff}
+  .flow .arr{color:var(--teal3);font-size:1.35rem;font-weight:800}
+  .footer{position:absolute;bottom:2.3vh;left:7vw;right:7vw;display:flex;justify-content:space-between;
+          align-items:center;color:var(--muted);font-size:.9rem}
+  .progress{position:fixed;top:0;left:0;height:8px;background:linear-gradient(90deg,var(--teal),var(--teal3));
+            transition:width .35s ease;z-index:50;opacity:0}
+  .hint{position:fixed;bottom:1vh;right:1.5vw;color:#94a3b8;font-size:.76rem}
+  .nav{position:fixed;bottom:2vh;right:2vw;display:flex;gap:.5rem;z-index:50}
+  .nav button{background:#fff;border:1px solid var(--line);color:var(--teal);
+              width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;
+              box-shadow:0 2px 8px rgba(15,23,42,.1);transition:all .2s}
+  .nav button:hover{background:var(--teal);color:#fff;transform:scale(1.12)}
+  .quote{border-left:4px solid var(--teal3);background:var(--tealtint);padding:.9rem 1.15rem;
+         border-radius:0 10px 10px 0;color:var(--ink);font-size:1.2rem}
+  .center{align-items:center;text-align:center}
+  .center::before{height:0}
+  .center{background:linear-gradient(180deg,var(--tealtint),#fff 55%)}
+  .pill-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+  .lbl{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide active center">
+    <div class="chip">🗓️ Day 7 · Data Foundations</div>
+    <h1 style="margin-top:1rem">🔎 Embedding &amp; Vector Store<br><span class="accent">Xây dựng &amp; So sánh RAG Retrieval</span></h1>
+    <p class="sub">👥 Nhóm <b>C2-C401</b> · 📰 Tin tức Công nghệ &amp; Khoa học tiếng Việt</p>
+    <div class="members">
+      <span>👩‍💻 Phạm Thị Tuyết Nga · 877</span>
+      <span>🧑‍💻 Trần Hoàng Đạt · 807</span>
+      <span>🧑‍💻 Nguyễn Văn Đoan · 795</span>
+      <span>🧑‍💻 Tạ Duy Xuân · 970</span>
+      <span>🧑‍💻 Lê Duy Hùng · 718</span>
+    </div>
+  </section>
+
+  <!-- 2 OVERVIEW -->
+  <section class="slide">
+    <h2><span class="ico">🎯</span><span class="htxt"><span class="tag">Tổng quan</span>Chúng tôi đã làm gì?</span></h2>
+    <div class="grid g2">
+      <div class="card"><h3>⚙️ ① Triển khai <code>src</code></h3>
+        <p>3 chunking + cosine + EmbeddingStore + RAG Agent. <span class="chip">✅ 42/42 tests</span></p></div>
+      <div class="card"><h3>📚 ② Bộ tài liệu</h3>
+        <p>8 bài đại diện, gán metadata 4 trường, định dạng <code>.md</code>.</p></div>
+      <div class="card"><h3>❓ ③ 5 Benchmark queries</h3>
+        <p>Query tổng hợp đa-tài-liệu + 1 query dùng <b>metadata filter</b>.</p></div>
+      <div class="card"><h3>🏁 ④ Mỗi người 1 strategy</h3>
+        <p>5 cấu hình chunking khác nhau → so sánh cùng corpus &amp; query.</p></div>
+    </div>
+  </section>
+
+  <!-- 3 COSINE concept -->
+  <section class="slide">
+    <h2><span class="ico">📐</span><span class="htxt"><span class="tag">Nền tảng</span>Cosine Similarity là gì?</span></h2>
+    <p>Đo <b>góc</b> giữa hai vector embedding — quan tâm <b>hướng</b> (ý nghĩa), không quan tâm độ dài.</p>
+    <div class="grid g2" style="margin-top:1.1rem">
+      <div class="card"><h3 class="s-good">✅ HIGH similarity</h3>
+        <p>"iPhone 18 Pro Mỹ pin 4.288 mAh" ↔ "iPhone Mỹ pin lớn hơn nhờ bỏ khay SIM"</p>
+        <p class="lbl">→ cùng chủ đề &amp; thực thể</p></div>
+      <div class="card"><h3 class="s-bad">❌ LOW similarity</h3>
+        <p>"Tên lửa New Glenn phát nổ" ↔ "Cá chép xâm hại bị loại bỏ"</p>
+        <p class="lbl">→ hai lĩnh vực rời nhau</p></div>
+    </div>
+    <p class="quote" style="margin-top:1.1rem">💡 Không dùng Euclidean: văn bản dài có magnitude lớn → bị phạt oan. Cosine chuẩn hóa độ dài.</p>
+  </section>
+
+  <!-- 4 DOCUMENT SELECTION -->
+  <section class="slide">
+    <h2><span class="ico">📰</span><span class="htxt"><span class="tag">Section 2</span>Bộ tài liệu &amp; Lý do chọn</span></h2>
+    <div class="pill-row">
+      <span class="chip">🤖 AI</span><span class="chip">📱 Hardware</span><span class="chip">🚀 Space</span>
+      <span class="chip">🧬 Bio-health</span><span class="chip">🐟 Environment</span>
+    </div>
+    <ul style="margin-top:1.1rem">
+      <li><span class="li-ico">🇻🇳</span><b>Tiếng Việt thật</b> → kiểm chứng chunking/embedding với dấu tiếng Việt.</li>
+      <li><span class="li-ico">🏷️</span>Mỗi bài một chủ đề tách bạch → <b>dễ gán metadata</b> &amp; gold answer rõ ràng.</li>
+      <li><span class="li-ico">📄</span>Cấu trúc <b>đoạn ngăn bằng dòng trống</b> → lý tưởng để so sánh chunking.</li>
+    </ul>
+    <p class="sub">📊 8 bài · 1.819 – 6.269 ký tự/bài · metadata: <code>category · entity · date · lang</code></p>
+  </section>
+
+  <!-- 5 METADATA -->
+  <section class="slide">
+    <h2><span class="ico">🏷️</span><span class="htxt"><span class="tag">Section 2</span>Metadata Schema</span></h2>
+    <table>
+      <tr><th>Trường</th><th>Ví dụ</th><th>Vai trò</th></tr>
+      <tr><td>🗂️ <code>category</code></td><td>ai · hardware · space · bio-health · environment</td><td>Lọc lĩnh vực — <code>filter={"category":"space"}</code></td></tr>
+      <tr><td>🏢 <code>entity</code></td><td>Apple · Microsoft · Viettel · NASA</td><td>Lọc theo công ty/tổ chức</td></tr>
+      <tr><td>📅 <code>date</code></td><td>2026-06-02</td><td>Ưu tiên tin mới nhất</td></tr>
+      <tr><td>🌐 <code>lang</code></td><td>vi</td><td>Định danh ngôn ngữ</td></tr>
+    </table>
+    <p class="quote" style="margin-top:1.3rem">🔧 Metadata filter = đòn bẩy rẻ &amp; mạnh: tách bài cùng từ khóa nhưng khác lĩnh vực.</p>
+  </section>
+
+  <!-- 6 CHUNKING strategies -->
+  <section class="slide">
+    <h2><span class="ico">✂️</span><span class="htxt"><span class="tag">Section 3</span>3 Chiến lược Chunking</span></h2>
+    <div class="grid g3">
+      <div class="card"><h3>📏 FixedSize</h3><p>Cửa sổ trượt <code>size</code>+<code>overlap</code>. Đơn giản, dự đoán được. <span class="lbl">⚠ cắt ngang câu</span></p></div>
+      <div class="card"><h3>📝 Sentence</h3><p>Gom <code>max</code> câu/chunk. Trọn câu, dễ đọc. <span class="lbl">⚠ độ dài dao động</span></p></div>
+      <div class="card"><h3>🌲 Recursive</h3><p>Đoạn→dòng→câu→từ. Bám cấu trúc, ổn định. <span class="lbl">⚠ tốn tài nguyên</span></p></div>
+    </div>
+    <h3 style="margin-top:1.3rem">📊 Baseline (đo thực, doc 05 · 6.269 ký tự)</h3>
+    <table>
+      <tr><th>Strategy</th><th>Chunk Count</th><th>Avg Length</th><th>Context?</th></tr>
+      <tr><td>fixed_size</td><td>14</td><td>494</td><td>Trung bình</td></tr>
+      <tr><td>by_sentences</td><td>16</td><td>390</td><td>Tốt</td></tr>
+      <tr><td>recursive</td><td>27</td><td>230</td><td class="s-good">Tốt nhất ⭐</td></tr>
+    </table>
+  </section>
+
+  <!-- 7 MY STRATEGY -->
+  <section class="slide">
+    <h2><span class="ico">📝</span><span class="htxt"><span class="tag">Strategy của tôi</span>SentenceChunker (max=3)</span></h2>
+    <p>Tách câu bằng regex, <b>gom mỗi 3 câu</b> → luôn bắt đầu/kết thúc ở ranh giới câu, <b>không cắt giữa câu</b>.</p>
+    <pre><span class="k">from</span> src.chunking <span class="k">import</span> SentenceChunker
+chunker = SentenceChunker(max_sentences_per_chunk=<span class="s">3</span>)  <span class="c"># gom 3 câu / chunk</span>
+chunks = chunker.chunk(text)</pre>
+    <p class="sub">💡 Bài báo tiếng Việt giàu <b>câu trọn ý</b> — 3 câu vừa đủ ngữ cảnh cho query tổng hợp, dễ kiểm chứng.</p>
+  </section>
+
+  <!-- 8 TEAM COMPARISON (key slide) -->
+  <section class="slide">
+    <h2><span class="ico">🆚</span><span class="htxt"><span class="tag">Section 3 · điểm nhấn</span>So sánh 5 Strategy trong nhóm</span></h2>
+    <table>
+      <tr><th>Thành viên</th><th>Strategy</th><th>Score</th><th>Nhận xét</th></tr>
+      <tr><td>🥇 Trần Hoàng Đạt</td><td>Recursive (300)</td><td class="score s-good">9/10</td><td>Giữ cấu trúc báo chí cực tốt, ổn định 🏆</td></tr>
+      <tr class="me"><td>🥈 Phạm Thị Tuyết Nga</td><td>Sentence (max=3)</td><td class="score s-mid">7/10</td><td>Trọn câu, mạnh ở query tổng hợp</td></tr>
+      <tr><td>🥉 Nguyễn Văn Đoan</td><td>Fixed (200/20)</td><td class="score s-mid">6/10</td><td>Đơn giản, nhanh — cắt cứng, precision thấp</td></tr>
+      <tr><td>🥉 Lê Duy Hùng</td><td>Fixed (600/100)</td><td class="score s-mid">6/10</td><td>Chi tiết — dễ mất ngữ cảnh liên tiếp</td></tr>
+      <tr><td>⚠️ Tạ Duy Xuân</td><td>Custom (SciencePaper)</td><td class="score s-bad">2/10</td><td>Giữ logic — nhưng chunk quá dài, loãng</td></tr>
+    </table>
+    <p class="quote" style="margin-top:1rem">🎯 Cắt theo <b>ngữ nghĩa</b> (câu/đoạn) &gt; cắt cứng ký tự — chunk quá nhỏ lẫn quá lớn đều hại.</p>
+  </section>
+
+  <!-- 9 BENCHMARK QUERIES -->
+  <section class="slide">
+    <h2><span class="ico">❓</span><span class="htxt"><span class="tag">Section 6</span>5 Benchmark Queries</span></h2>
+    <ul>
+      <li><span class="li-ico">1️⃣</span>Microsoft phát triển sản phẩm AI nào, mục tiêu? <span class="lbl">→ bài 01·16·19</span></li>
+      <li><span class="li-ico">2️⃣</span>Tổ chức nào đầu tư mạnh vào AI &amp; lĩnh vực gì? <span class="lbl">→ 06·02·01·16·19·20·11</span></li>
+      <li><span class="li-ico">3️⃣</span>Dự án không gian — cơ hội/thách thức? <span class="chip">🔧 filter=space</span> <span class="lbl">→ 09·13·15·18</span></li>
+      <li><span class="li-ico">4️⃣</span>Đột phá khoa học/công nghệ &amp; tác động? <span class="lbl">→ 05·16·11·14</span></li>
+      <li><span class="li-ico">5️⃣</span>AI tác động học tập/làm việc? <span class="lbl">→ 17·02·10·20</span></li>
+    </ul>
+    <p class="sub">🎯 Gold answer = top-k bao phủ phần lớn bài liên quan (recall đa-tài-liệu).</p>
+  </section>
+
+  <!-- 10 RESULTS / FILTER -->
+  <section class="slide">
+    <h2><span class="ico">🔧</span><span class="htxt"><span class="tag">Section 6</span>Metadata Filtering hoạt động ra sao?</span></h2>
+    <div class="flow">
+      <span class="step">❓ Q3</span><span class="arr">→</span>
+      <span class="step">🗂️ Lọc <code>category=space</code></span><span class="arr">→</span>
+      <span class="step">📄 Giữ 09·13·15·18</span><span class="arr">→</span>
+      <span class="step">📐 Tính similarity</span><span class="arr">→</span>
+      <span class="step s-good">✅ Top-k chính xác hơn</span>
+    </div>
+    <p style="margin-top:1.3rem">🚫 Không lọc → kéo nhầm bài AI/hardware có "vệ tinh/dữ liệu". <b>Lọc trước khi rank</b> → tăng precision.</p>
+    <div class="kpi">
+      <div class="card"><div class="big">5</div><div class="lbl">❓ queries</div></div>
+      <div class="card"><div class="big">1</div><div class="lbl">🔧 dùng filter</div></div>
+      <div class="card"><div class="big">4</div><div class="lbl">🏷️ trường metadata</div></div>
+    </div>
+  </section>
+
+  <!-- 11 FAILURE ANALYSIS -->
+  <section class="slide">
+    <h2><span class="ico">🐞</span><span class="htxt"><span class="tag">Section 7</span>Failure Analysis</span></h2>
+    <div class="card" style="border-color:var(--bad);border-width:2px">
+      <h3 class="s-bad">⚠️ Query "thất bại" khi chạy mock embedder</h3>
+      <p>Cặp câu <b>cùng chủ đề</b> (base editing ↔ CRISPR) vẫn cho cosine = <b class="s-bad">−0.226</b> 😱</p>
+    </div>
+    <ul style="margin-top:1.1rem">
+      <li><span class="li-ico">🔍</span><b>Nguyên nhân:</b> mock embedder băm ngẫu nhiên → <b>không nắm ngữ nghĩa</b>, ranking vô nghĩa.</li>
+      <li><span class="li-ico">📌</span><b>Bài học:</b> chunk tốt vẫn vô dụng nếu embedder kém → embedder quyết định.</li>
+      <li><span class="li-ico">🛠️</span><b>Khắc phục:</b> <code>all-MiniLM-L6-v2</code> / OpenAI → kỳ vọng 4–5/5.</li>
+    </ul>
+  </section>
+
+  <!-- 12 LEARNED -->
+  <section class="slide">
+    <h2><span class="ico">🎓</span><span class="htxt"><span class="tag">Section 7</span>Bài học rút ra</span></h2>
+    <div class="grid g3">
+      <div class="card"><h3>✂️ Chunking</h3><p>Cắt ngữ nghĩa &gt; cắt cứng. Strategy khác nhau thắng ở query khác nhau.</p></div>
+      <div class="card"><h3>🧠 Embedder</h3><p>Mắt xích quyết định — phải dùng embedder thật ngay từ đầu.</p></div>
+      <div class="card"><h3>🏷️ Metadata</h3><p>Filter rẻ &amp; mạnh khi corpus nhiều bài cùng lĩnh vực.</p></div>
+    </div>
+    <p class="quote" style="margin-top:1.3rem">🔁 Làm lại: cấu hình embedder thật trước, thêm <code>section/heading</code> để filter mịn.</p>
+  </section>
+
+  <!-- 13 THANKS -->
+  <section class="slide center">
+    <div class="chip">👥 Nhóm C2-C401</div>
+    <h1 style="margin-top:1rem">🙏 Cảm ơn đã <span class="accent">lắng nghe!</span></h1>
+    <p class="sub">🔎 Embedding &amp; Vector Store · RAG Retrieval Comparison</p>
+    <p style="margin-top:1rem;color:var(--muted)">🙋 Câu hỏi &amp; thảo luận</p>
+    <div class="members">
+      <span>👩‍💻 Tuyết Nga</span><span>🧑‍💻 Hoàng Đạt</span><span>🧑‍💻 Văn Đoan</span><span>🧑‍💻 Duy Xuân</span><span>🧑‍💻 Duy Hùng</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer"><span>🔎 Lab 7 — Data Foundations</span><span id="counter">1 / 13</span></div>
+<div class="nav"><button onclick="go(-1)">‹</button><button onclick="go(1)">›</button></div>
+<div class="hint">← → / Space chuyển slide · F toàn màn hình</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  function render(){
+    slides.forEach((s,n)=>s.classList.toggle('active',n===i));
+    document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+    document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+  }
+  function go(d){i=Math.min(slides.length-1,Math.max(0,i+d));render();}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();go(1);}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+    else if(e.key==='Home'){i=0;render();}
+    else if(e.key==='End'){i=slides.length-1;render();}
+    else if(e.key.toLowerCase()==='f'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+  let x0=null;
+  document.addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+  document.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);x0=null;});
+  render();
+</script>
+</body>
+</html>
